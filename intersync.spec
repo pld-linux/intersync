@@ -6,6 +6,7 @@ Release:	1
 License:	GPL
 Group:		Networking/Daemons
 Source0:	ftp://ftp.inter-mezzo.org/pub/intermezzo/%{name}-%{version}.tar.gz
+# Source0-md5:	63e8c651923a62f92d40df3812cdc03f
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		%{name}-aclnoextattr.patch
