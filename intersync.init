@@ -19,14 +19,18 @@ if [ -f /etc/sysconfig/intersync ] ; then
 	. /etc/sysconfig/intersync
 else
 	CLIENT_OPTS=
-        CACHE=/var/lib/intermezzo/cache
+	CACHE=/var/lib/intermezzo/cache
 fi
 
 # Check that networking is up.
-if is_no "${NETWORKING}"; then
-	# nls "ERROR: Networking is down. %s can't be run." <service>
-	msg_network_down InterSync
-	exit 1
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network ]; then
+		# nls "ERROR: Networking is down. %s can't be run." <service>
+		msg_network_down InterSync
+		exit 1
+	fi
+else
+	exit 0
 fi
 
 # See how we were called.
@@ -45,7 +49,7 @@ case "$1" in
 	fi
 	;;
   stop)
-        # Stop daemons.
+	# Stop daemons.
 	if [ -f /var/lock/subsys/intersync ]; then
 		msg_stopping InterSync
 		killproc intersync
@@ -56,7 +60,7 @@ case "$1" in
 		exit 1
 	fi
 	;;
-  restart)
+  restart|reload)
 	$0 stop
 	$0 start
 	RETVAL=$?
@@ -65,7 +69,7 @@ case "$1" in
 	status intersync
 	;;
   *)
-	echo $"Usage: intersync {start|stop|restart|status}"
+	msg_usage "$0 {start|stop|restart|reload|status}"
 	exit 1
 esac
 
