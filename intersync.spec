@@ -16,21 +16,24 @@ Source2:	%{name}.sysconfig
 Patch0:		%{name}-aclnoextattr.patch
 Patch1:		%{name}-FHS.patch
 URL:		http://www.inter-mezzo.org/
+BuildRequires:	curl-devel
+BuildRequires:	e2fsprogs-devel
 BuildRequires:	glib2-devel
 %{?with_dist_kernel:BuildRequires:	kernel-headers >= 2.4}
 BuildRequires:	libghttp-devel >= 1.0.9-5
 BuildRequires:	pkgconfig
-BuildRequires:	e2fsprogs-devel
 BuildRequires:	readline-devel
-BuildRequires:	curl-devel
-Requires(pre):	/usr/bin/getgid
+BuildRequires:	rpmbuild(macros) >= 1.159
 Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires(postun):	/usr/sbin/userdel
 Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
 Requires(post,preun):	/sbin/chkconfig
 Requires:	apache
+Provides:	group(intermezzo)
+Provides:	user(intermezzo)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -68,8 +71,8 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/intersync
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-if [ -n "`getgid intermezzo`" ]; then
-	if [ "`getgid intermezzo`" != "45" ]; then
+if [ -n "`/usr/bin/getgid intermezzo`" ]; then
+	if [ "`/usr/bin/getgid intermezzo`" != "45" ]; then
 		echo "Error: group intermezzo doesn't have gid=45. Correct this before installing intersync." 1>&2
 		exit 1
 	fi
@@ -77,12 +80,13 @@ else
 	/usr/sbin/groupadd -g 45 -r -f intermezzo
 fi
 if [ -n "`/bin/id -u intermezzo`" ]; then
-	if [ "`/bin/id -u intermezzo`" != "45" ]; then
+	if [ "`/bin/id -u intermezzo`" != 45 ]; then
 		echo "Error: user intermezzo doesn't have uid=45. Correct this before installing intersync." 1>&2
 		exit 1
 	fi
 else
-	/usr/sbin/useradd -g intermezzo -u 45 -d / -s /bin/false intermezzo
+	/usr/sbin/useradd -g intermezzo -u 45 -d /usr/share/empty \
+		-s /bin/false intermezzo
 fi
 
 %post
@@ -95,8 +99,8 @@ fi
 
 %postun
 if [ "$1" = "0" ]; then
-	/usr/sbin/userdel intermezzo
-	/usr/sbin/groupdel intermezzo
+	%userremove intermezzo
+	%groupremove intermezzo
 fi
 
 %files
