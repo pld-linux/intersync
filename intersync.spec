@@ -108,5 +108,5 @@ fi
 /var/log/intermezzo
 
 # devel?
-#%{_libdir}/lib*.a
-#%{_includedir}/intermezzo
+#%%{_libdir}/lib*.a
+#%%{_includedir}/intermezzo
