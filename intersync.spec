@@ -15,6 +15,9 @@ BuildRequires:	glib2-devel
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers >= 2.4}
 BuildRequires:	libghttp-devel >= 1.0.9-5
 BuildRequires:	pkgconfig
+BuildRequires:  e2fsprogs-devel
+BuildRequires:  readline-devel
+BuildRequires:  curl-devel
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/groupadd
