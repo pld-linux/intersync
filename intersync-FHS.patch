@@ -1,0 +1,153 @@
+diff -Nur intersync-0.9.5.orig/doc/InterMezzo-HOWTO.sgml intersync-0.9.5/doc/InterMezzo-HOWTO.sgml
+--- intersync-0.9.5.orig/doc/InterMezzo-HOWTO.sgml	Thu Sep 26 19:23:16 2002
++++ intersync-0.9.5/doc/InterMezzo-HOWTO.sgml	Wed Nov  6 11:40:44 2002
+@@ -639,11 +639,11 @@
+ SYSID is replaced with the client's sysid, and FSETNAME is replaced
+ with the name of the fileset:
+ 
+-<tt> touch /var/intermezzo/SYSID/FSETNAME-synced</tt>
++<tt> touch /var/lib/intermezzo/SYSID/FSETNAME-synced</tt>
+ 
+ e.g. on client <tt/iclientA/ with fileset <tt/shared/ use:
+ 
+-<tt> touch /var/intermezzo/iclientA/shared-synced</tt>
++<tt> touch /var/lib/intermezzo/iclientA/shared-synced</tt>
+ 
+ <item> The persistent databases will be out of sync at this point,
+ so you must clear the KML and last_rcvd records on both the client and
+diff -Nur intersync-0.9.5.orig/doc/InterSync-HOWTO.html intersync-0.9.5/doc/InterSync-HOWTO.html
+--- intersync-0.9.5.orig/doc/InterSync-HOWTO.html	Thu Sep 26 19:23:16 2002
++++ intersync-0.9.5/doc/InterSync-HOWTO.html	Wed Nov  6 11:43:55 2002
+@@ -151,7 +151,7 @@
+ 
+ <P>
+ <UL>
+-<LI>Intersync creates a configuration and cache directory under /var/intermezzo-X,
++<LI>Intersync creates a configuration and cache directory under /var/lib/intermezzo/X,
+ where X is the channel number. </LI>
+ <LI>In this directory is a an apache configuration file and a symbolic
+ link to the mountpoint. Httpd is simply running as:</LI>
+@@ -163,9 +163,9 @@
+ <P>
+ <UL>
+ <LI>Httpd uses a library of CGI scripts, which are installed in /usr/lib/intermezzo.</LI>
+-<LI>/var/intermezzo-0 also contains a file named <EM>sysid, </EM>which contains
++<LI>/var/lib/intermezzo/0 also contains a file named <EM>sysid, </EM>which contains
+ a UUID identifying the intersync. </LI>
+-<LI>/var/intermezzo-X on the server contains a file named <EM>profile.</EM>The profile file is fetched by the client and tells the client what
++<LI>/var/lib/intermezzo/X on the server contains a file named <EM>profile.</EM>The profile file is fetched by the client and tells the client what
+ fileset it is mounting. Do not change this from rootfset, since you
+ will have to do other configuration work. </LI>
+ </UL>
+@@ -210,9 +210,9 @@
+ file.  In the current release of InterMezzo, the KML and last_rcvd
+ files need to be created (usually by running <CODE>mkizofs</CODE>) before first
+ mounting an InterMezzo filesystem. 
+-<P>Symlink <CODE>/var/intermezzo/cache</CODE> to the top directory of your mounted
++<P>Symlink <CODE>/var/lib/intermezzo/cache</CODE> to the top directory of your mounted
+ InterMezzo cache: 
+-<P>ln -s /izo0 /var/intermezzo/cache 
++<P>ln -s /izo0 /var/lib/intermezzo/cache 
+ <H2><A NAME="s7">7. Debugging </A></H2>
+ 
+ <P>To help us find bugs we need logging information.  The logs come
+diff -Nur intersync-0.9.5.orig/doc/InterSync-HOWTO.txt intersync-0.9.5/doc/InterSync-HOWTO.txt
+--- intersync-0.9.5.orig/doc/InterSync-HOWTO.txt	Thu Sep 26 19:23:16 2002
++++ intersync-0.9.5/doc/InterSync-HOWTO.txt	Wed Nov  6 11:44:24 2002
+@@ -207,7 +207,7 @@
+ 
+ 
+   +o  Intersync creates a configuration and cache directory under
+-     /var/intermezzo-X, where X is the channel number.
++     /var/lib/intermezzo/X, where X is the channel number.
+ 
+   +o  In this directory is a an apache configuration file and a symbolic
+      link to the mountpoint. Httpd is simply running as:
+@@ -221,10 +221,10 @@
+   +o  Httpd uses a library of CGI scripts, which are installed in
+      /usr/lib/intermezzo.
+ 
+-  +o  /var/intermezzo-0 also contains a file named _s_y_s_i_d_, which contains
++  +o  /var/lib/intermezzo/0 also contains a file named _s_y_s_i_d_, which contains
+      a UUID identifying the intersync.
+ 
+-  +o  /var/intermezzo-X on the server contains a file named _p_r_o_f_i_l_e_.The
++  +o  /var/lib/intermezzo/X on the server contains a file named _p_r_o_f_i_l_e_.The
+      profile file is fetched by the client and tells the client what
+      fileset it is mounting. Do not change this from rootfset, since you
+      will have to do other configuration work.
+@@ -282,10 +282,10 @@
+   of InterMezzo, the KML and last_rcvd files need to be created (usually
+   by running mkizofs) before first mounting an InterMezzo filesystem.
+ 
+-  Symlink /var/intermezzo/cache to the top directory of your mounted
++  Symlink /var/lib/intermezzo/cache to the top directory of your mounted
+   InterMezzo cache:
+ 
+-  ln -s /izo0 /var/intermezzo/cache
++  ln -s /izo0 /var/lib/intermezzo/cache
+ 
+   77..  DDeebbuuggggiinngg
+ 
+diff -Nur intersync-0.9.5.orig/intersync/fileset.c intersync-0.9.5/intersync/fileset.c
+--- intersync-0.9.5.orig/intersync/fileset.c	Thu Sep 26 19:23:25 2002
++++ intersync-0.9.5/intersync/fileset.c	Wed Nov  6 11:40:26 2002
+@@ -722,9 +722,9 @@
+                cache->cache_channel);
+ 
+         /* Setup the httpd docroot.  If the user didn't specify a docroot
+-         * directory, use /var/intermezzo-[channel] */
++         * directory, use /var/lib/intermezzo/[channel] */
+         if (docroot == NULL)
+-                cache->cache_docroot = g_strdup_printf("/var/intermezzo-%d",
++                cache->cache_docroot = g_strdup_printf("/var/lib/intermezzo/%d",
+                                                   cache->cache_channel);
+         else
+                 cache->cache_docroot = docroot;
+diff -Nur intersync-0.9.5.orig/packaging/intersync intersync-0.9.5/packaging/intersync
+--- intersync-0.9.5.orig/packaging/intersync	Thu Sep 26 19:23:27 2002
++++ intersync-0.9.5/packaging/intersync	Wed Nov  6 11:44:38 2002
+@@ -19,7 +19,7 @@
+ 	. /etc/sysconfig/intersync
+ else
+ 	CLIENT_OPTS=
+-        CACHE=/var/intermezzo/cache
++        CACHE=/var/lib/intermezzo/cache
+ fi
+ 
+ # Check that networking is up.
+diff -Nur intersync-0.9.5.orig/sampleconfigs/intersync.conf intersync-0.9.5/sampleconfigs/intersync.conf
+--- intersync-0.9.5.orig/sampleconfigs/intersync.conf	Thu Sep 26 19:23:28 2002
++++ intersync-0.9.5/sampleconfigs/intersync.conf	Wed Nov  6 11:38:34 2002
+@@ -4,24 +4,24 @@
+ User intermezzo
+ Group intermezzo
+ 
+-LoadModule alias_module		/etc/httpd/modules/mod_alias.so
+-LoadModule cgi_module		/etc/httpd/modules/mod_cgi.so
+-LoadModule config_log_module	/etc/httpd/modules/mod_log_config.so
++LoadModule alias_module		/usr/lib/apache/mod_alias.so
++LoadModule cgi_module		/usr/lib/apache/mod_cgi.so
++LoadModule config_log_module	/usr/lib/apache/mod_log_config.so
+ 
+ ErrorLog "/var/log/intermezzo/apache_error_log"
+ LogLevel warn
+ LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+ CustomLog "/var/log/intermezzo/apache_access_log" combined
+ 
+-PidFile /var/intermezzo/httpd.pid
++PidFile /var/lib/intermezzo/httpd.pid
+ 
+-<Directory /var/intermezzo/cgi-bin/>
++<Directory /var/lib/intermezzo/cgi-bin/>
+   AllowOverride None
+   Options ExecCGI
+ </Directory>
+ 
+-ScriptAlias /cgi-bin/ /var/intermezzo/cgi-bin/
++ScriptAlias /cgi-bin/ /var/lib/intermezzo/cgi-bin/
+ 
+ <VirtualHost _default_:*>
+-  DocumentRoot "/var/intermezzo/"
++  DocumentRoot "/var/lib/intermezzo/"
+ </VirtualHost>
