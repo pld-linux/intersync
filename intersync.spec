@@ -18,13 +18,8 @@ BuildRequires:	pkgconfig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  readline-devel
 BuildRequires:  curl-devel
-Requires(pre):	/usr/bin/getgid
-Requires(pre):	/bin/id
-Requires(pre):	/usr/sbin/groupadd
-Requires(pre):	/usr/sbin/useradd
+Requires(pre):	user-intermezzo
 Requires(post,preun):	/sbin/chkconfig
-Requires(postun):	/usr/sbin/userdel
-Requires(postun):	/usr/sbin/groupdel
 Requires:	apache
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -62,36 +57,12 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/intersync
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
-if [ -n "`getgid intermezzo`" ]; then
-	if [ "`getgid intermezzo`" != "45" ]; then
-		echo "Error: group intermezzo doesn't have gid=45. Correct this before installing intersync." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/groupadd -g 45 -r -f intermezzo
-fi
-if [ -n "`/bin/id -u intermezzo`" ]; then
-	if [ "`/bin/id -u intermezzo`" != "45" ]; then
-		echo "Error: user intermezzo doesn't have uid=45. Correct this before installing intersync." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g intermezzo -u 45 -d / -s /bin/false intermezzo
-fi
-
 %post
 /sbin/chkconfig --add intersync
 
 %preun
 if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del intersync
-fi
-
-%postun
-if [ "$1" = "0" ]; then
-	/usr/sbin/userdel intermezzo
-	/usr/sbin/groupdel intermezzo
 fi
 
 %files
