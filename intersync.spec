@@ -1,3 +1,7 @@
+#
+# Conditional build:
+%bcond_without	dist_kernel	# without kernel from distribution
+#
 Summary:	InterMezzo filesystem synchronization client
 Summary(pl):	Klient do synchronizacji systemów plików InterMezzo
 Name:		intersync
@@ -13,7 +17,7 @@ Patch0:		%{name}-aclnoextattr.patch
 Patch1:		%{name}-FHS.patch
 URL:		http://www.inter-mezzo.org/
 BuildRequires:	glib2-devel
-%{!?_without_dist_kernel:BuildRequires:	kernel-headers >= 2.4}
+%{?with_dist_kernel:BuildRequires:	kernel-headers >= 2.4}
 BuildRequires:	libghttp-devel >= 1.0.9-5
 BuildRequires:	pkgconfig
 BuildRequires:	e2fsprogs-devel
