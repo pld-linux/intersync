@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+# intersync	InterMezzo file system synchronization daemon
+#
+# chkconfig:	345 99 1
+# description:	InterSync is the InterMezzo file system synchronization daemon.
+# processname:	intersync
+# config:	/etc/intermezzo/intersync.conf
+# pidfile:	/var/run/intersync.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Source InterSync configureation.
+if [ -f /etc/sysconfig/intersync ] ; then
+	. /etc/sysconfig/intersync
+else
+	CLIENT_OPTS=
+        CACHE=/var/lib/intermezzo/cache
+fi
+
+# Check that networking is up.
+if is_no "${NETWORKING}"; then
+	# nls "ERROR: Networking is down. %s can't be run." <service>
+	msg_network_down InterSync
+	exit 1
+fi
+
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/intersync ]; then
+		msg_starting InterSync
+		daemon intersync $CLIENT_OPTS $CACHE
+		RETVAL=$?
+		echo "$!" > /var/run/intersync.pid
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/intersync
+	else
+		msg_already_running InterSync
+		exit 1
+	fi
+	;;
+  stop)
+        # Stop daemons.
+	if [ -f /var/lock/subsys/intersync ]; then
+		msg_stopping InterSync
+		killproc intersync
+		rm -f /var/lock/subsys/intersync
+		exit 0
+	else
+		msg_not_running InterSync
+		exit 1
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	RETVAL=$?
+	;;
+  status)
+	status intersync
+	;;
+  *)
+	echo $"Usage: intersync {start|stop|restart|status}"
+	exit 1
+esac
+
+exit $RETVAL

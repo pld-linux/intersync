@@ -1,0 +1,10 @@
+# Customized settings for InterSync
+
+# Nice level for InterSync
+#SERVICE_RUN_NICE_LEVEL="+5"
+
+# Command line options
+CLIENT_OPTS=
+
+# Cache directory
+CACHE=/var/lib/intermezzo/cache
