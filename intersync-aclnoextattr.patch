@@ -1,0 +1,13 @@
+--- intersync-0.9.4/fs24/vfs.c.orig	Fri May 10 00:31:35 2002
++++ intersync-0.9.4/fs24/vfs.c	Fri Aug 16 13:41:56 2002
+@@ -77,6 +77,10 @@
+ # ifdef CONFIG_FS_POSIX_ACL
+ #  include <linux/posix_acl.h>
+ # endif
++#else
++# ifdef CONFIG_FS_POSIX_ACL
++#  undef CONFIG_FS_POSIX_ACL
++# endif
+ #endif
+ 
+ extern struct inode_operations presto_sym_iops;
