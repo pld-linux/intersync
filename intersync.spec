@@ -23,7 +23,7 @@ BuildRequires:	glib2-devel
 BuildRequires:	libghttp-devel >= 1.0.9-5
 BuildRequires:	pkgconfig
 BuildRequires:	readline-devel
-BuildRequires:	rpmbuild(macros) >= 1.159
+BuildRequires:	rpmbuild(macros) >= 1.202
 Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
@@ -71,23 +71,8 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/intersync
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-if [ -n "`/usr/bin/getgid intermezzo`" ]; then
-	if [ "`/usr/bin/getgid intermezzo`" != "45" ]; then
-		echo "Error: group intermezzo doesn't have gid=45. Correct this before installing intersync." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/groupadd -g 45 -r -f intermezzo
-fi
-if [ -n "`/bin/id -u intermezzo`" ]; then
-	if [ "`/bin/id -u intermezzo`" != 45 ]; then
-		echo "Error: user intermezzo doesn't have uid=45. Correct this before installing intersync." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g intermezzo -u 45 -d /usr/share/empty \
-		-s /bin/false intermezzo
-fi
+%groupadd -g 45 -r -f intermezzo
+%useradd -g intermezzo -u 45 -d /usr/share/empty -s /bin/false intermezzo
 
 %post
 /sbin/chkconfig --add intersync
