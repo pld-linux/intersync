@@ -2,7 +2,7 @@
 #
 # intersync	InterMezzo file system synchronization daemon
 #
-# chkconfig:	345 99 1
+# chkconfig:	345 99 01
 # description:	InterSync is the InterMezzo file system synchronization daemon.
 # processname:	intersync
 # config:	/etc/intermezzo/intersync.conf
