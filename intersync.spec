@@ -55,12 +55,11 @@ serwerem HTTP (np. TUX lub Apache) jako serwerem.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
-
-install -d $RPM_BUILD_ROOT/var/log/intermezzo \
-	$RPM_BUILD_ROOT%{_sysconfdir}/intermezzo \
+install -d $RPM_BUILD_ROOT{/var/log/intermezzo,%{_sysconfdir}/intermezzo} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
+
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 
 install sampleconfigs/intersync.conf $RPM_BUILD_ROOT%{_sysconfdir}/intermezzo
 
@@ -95,9 +94,9 @@ fi
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_libdir}/intermezzo
 %attr(754,root,root) /etc/rc.d/init.d/intersync
-%attr(640,root,root) /etc/sysconfig/intersync
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/intersync
 %dir %{_sysconfdir}/intermezzo
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/intermezzo/intersync.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/intermezzo/intersync.conf
 %{_mandir}/man[458]/*
 /var/log/intermezzo
 
