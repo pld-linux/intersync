@@ -24,13 +24,13 @@ BuildRequires:	libghttp-devel >= 1.0.9-5
 BuildRequires:	pkgconfig
 BuildRequires:	readline-devel
 BuildRequires:	rpmbuild(macros) >= 1.202
+Requires(post,preun):	/sbin/chkconfig
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires(postun):	/usr/sbin/groupdel
-Requires(postun):	/usr/sbin/userdel
-Requires(post,preun):	/sbin/chkconfig
 Requires:	webserver = apache
 Provides:	group(intermezzo)
 Provides:	user(intermezzo)
