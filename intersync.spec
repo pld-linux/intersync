@@ -3,7 +3,7 @@
 %bcond_without	dist_kernel	# without kernel from distribution
 #
 Summary:	InterMezzo filesystem synchronization client
-Summary(pl):	Klient do synchronizacji systemów plików InterMezzo
+Summary(pl.UTF-8):   Klient do synchronizacji systemÃ³w plikÃ³w InterMezzo
 Name:		intersync
 Version:	0.9.5
 Release:	1
@@ -40,8 +40,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 InterSync is a C based InterMezzo client, intended to operate with an
 HTTP server (e.g. TUX or Apache) as a server.
 
-%description -l pl
-InterSync to napisany w C klient InterMezzo, maj±cy wspó³pracowaæ z
+%description -l pl.UTF-8
+InterSync to napisany w C klient InterMezzo, majÄ…cy wspÃ³Å‚pracowaÄ‡ z
 serwerem HTTP (np. TUX lub Apache) jako serwerem.
 
 %prep
