@@ -3,7 +3,7 @@
 %bcond_without	dist_kernel	# without kernel from distribution
 #
 Summary:	InterMezzo filesystem synchronization client
-Summary(pl.UTF-8):   Klient do synchronizacji systemów plików InterMezzo
+Summary(pl.UTF-8):	Klient do synchronizacji systemów plików InterMezzo
 Name:		intersync
 Version:	0.9.5
 Release:	1
